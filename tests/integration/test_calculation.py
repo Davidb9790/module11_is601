@@ -364,3 +364,92 @@ def test_polymorphic_method_calling():
         result = calc.get_result()
         assert result == expected, \
             f"{calc_type} failed: expected {expected}, got {result}"
+
+# Line 202
+def test_base_calculation_get_result_raises():
+    calc = Calculation(user_id=uuid.uuid4(), inputs=[1, 2])
+    with pytest.raises(NotImplementedError):
+        calc.get_result()
+
+# Line 207
+def test_calculation_repr():
+    calc = Addition(user_id=uuid.uuid4(), inputs=[1, 2])
+    text = repr(calc)
+    assert "Calculation" in text
+    assert "addition" in text
+    assert "[1, 2]" in text
+
+# Line 258
+# Test valid addition
+def test_addition_valid():
+    calc = Addition(user_id=uuid.uuid4(), inputs=[1, 2, 3])
+    assert calc.get_result() == 6
+
+# Test error: inputs is not a list
+def test_addition_inputs_not_list():
+    calc = Addition(user_id=uuid.uuid4(), inputs="not-a-list")
+    with pytest.raises(ValueError):
+        calc.get_result()
+
+# Test error: fewer than 2 numbers
+def test_addition_too_few_inputs():
+    calc = Addition(user_id=uuid.uuid4(), inputs=[5])
+    with pytest.raises(ValueError):
+        calc.get_result()
+
+# Line 288
+def test_subtraction_valid():
+    calc = Subtraction(user_id=uuid.uuid4(), inputs=[10, 3, 2])
+    assert calc.get_result() == 5
+
+def test_subtraction_inputs_not_list():
+    calc = Subtraction(user_id=uuid.uuid4(), inputs="not-a-list")
+    with pytest.raises(ValueError):
+        calc.get_result()
+
+def test_subtraction_too_few_inputs():
+    calc = Subtraction(user_id=uuid.uuid4(), inputs=[10])
+    with pytest.raises(ValueError):
+        calc.get_result()
+
+# Line 323
+# Valid multiplication
+def test_multiplication_valid():
+    calc = Multiplication(user_id=uuid.uuid4(), inputs=[2, 3, 4])
+    assert calc.get_result() == 24
+
+# Error: inputs not a list
+def test_multiplication_inputs_not_list():
+    calc = Multiplication(user_id=uuid.uuid4(), inputs="not-a-list")
+    with pytest.raises(ValueError):
+        calc.get_result()
+
+# Error: fewer than 2 numbers
+def test_multiplication_too_few_inputs():
+    calc = Multiplication(user_id=uuid.uuid4(), inputs=[5])
+    with pytest.raises(ValueError):
+        calc.get_result()
+
+# Line 362
+#  Valid division
+def test_division_valid():
+    calc = Division(user_id=uuid.uuid4(), inputs=[100, 2, 5])
+    assert calc.get_result() == 10
+
+# Error: inputs not a list
+def test_division_inputs_not_list():
+    calc = Division(user_id=uuid.uuid4(), inputs="not-a-list")
+    with pytest.raises(ValueError):
+        calc.get_result()
+
+# Error: fewer than 2 numbers
+def test_division_too_few_inputs():
+    calc = Division(user_id=uuid.uuid4(), inputs=[10])
+    with pytest.raises(ValueError):
+        calc.get_result()
+
+# Error: divide by zero
+def test_division_divide_by_zero():
+    calc = Division(user_id=uuid.uuid4(), inputs=[10, 0])
+    with pytest.raises(ValueError):
+        calc.get_result()

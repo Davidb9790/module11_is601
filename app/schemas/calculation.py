@@ -70,7 +70,7 @@ class CalculationBase(BaseModel):
         examples=[[10.5, 3, 2]],
         min_length=2
     )
-
+    # --- Validate type BEFORE Pydantic processes it ---
     @field_validator("type", mode="before")
     @classmethod
     def validate_type(cls, v):
@@ -98,6 +98,7 @@ class CalculationBase(BaseModel):
             )
         return v.lower()
 
+    # --- Validate inputs is actually a list ---
     @field_validator("inputs", mode="before")
     @classmethod
     def check_inputs_is_list(cls, v):
@@ -119,7 +120,8 @@ class CalculationBase(BaseModel):
         if not isinstance(v, list):
             raise ValueError("Input should be a valid list")
         return v
-
+    
+    # --- Cross-field validation AFTER fields validated ---
     @model_validator(mode='after')
     def validate_inputs(self) -> "CalculationBase":
         """
@@ -151,7 +153,7 @@ class CalculationBase(BaseModel):
             if any(x == 0 for x in self.inputs[1:]):
                 raise ValueError("Cannot divide by zero")
         return self
-
+    # Allow loading from SQLAlchemy models
     model_config = ConfigDict(
         from_attributes=True,
         json_schema_extra={
@@ -229,7 +231,7 @@ class CalculationUpdate(BaseModel):
         json_schema_extra={"example": {"inputs": [42, 7]}}
     )
 
-
+# 
 class CalculationResponse(CalculationBase):
     """
     Schema for reading a Calculation from the database.

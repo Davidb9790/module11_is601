@@ -42,7 +42,7 @@ class AbstractCalculation:
     abstract class defines the structure and subclasses provide specific
     implementations.
     """
-
+    # Columns Defined BELOW
     @declared_attr
     def __tablename__(cls):
         """All calculation types share the 'calculations' table"""
@@ -72,7 +72,7 @@ class AbstractCalculation:
             nullable=False,
             index=True
         )
-
+    # Where the polymorphic identity is stored, e.g., 'addition', 'subtraction'
     @declared_attr
     def type(cls):
         """
@@ -143,7 +143,7 @@ class AbstractCalculation:
         to user.calculations and calculation.user.
         """
         return relationship("User", back_populates="calculations")
-
+    # Factory pattern implementation for creating specific calculation types
     @classmethod
     def create(cls, calculation_type: str, user_id: uuid.UUID,
                inputs: List[float]) -> "Calculation":
@@ -187,7 +187,7 @@ class AbstractCalculation:
                 f"Unsupported calculation type: {calculation_type}"
             )
         return calculation_class(user_id=user_id, inputs=inputs)
-
+    # Where the abstract method is defined
     def get_result(self) -> float:
         """
         Abstract method to compute the calculation result.
@@ -223,6 +223,7 @@ class Calculation(Base, AbstractCalculation):
     2. Determines the appropriate subclass
     3. Returns an instance of that subclass
     """
+    # Base class identity for polymorphic queries; not used directly
     __mapper_args__ = {
         "polymorphic_on": "type",
         "polymorphic_identity": "calculation",
@@ -240,8 +241,9 @@ class Addition(Calculation):
         add = Addition(user_id=user_id, inputs=[1, 2, 3])
         result = add.get_result()  # Returns 6
     """
+    # Subclass Identities
     __mapper_args__ = {"polymorphic_identity": "addition"}
-
+    # Addition
     def get_result(self) -> float:
         """
         Calculate the sum of all input numbers.
@@ -273,7 +275,7 @@ class Subtraction(Calculation):
         result = sub.get_result()  # Returns 5 (10 - 3 - 2)
     """
     __mapper_args__ = {"polymorphic_identity": "subtraction"}
-
+    # Subtraction
     def get_result(self) -> float:
         """
         Subtract all subsequent numbers from the first number.
@@ -308,7 +310,7 @@ class Multiplication(Calculation):
         result = mult.get_result()  # Returns 24
     """
     __mapper_args__ = {"polymorphic_identity": "multiplication"}
-
+    # Multiplication
     def get_result(self) -> float:
         """
         Calculate the product of all input numbers.
@@ -346,7 +348,7 @@ class Division(Calculation):
     Permission) by checking for zero during calculation rather than before.
     """
     __mapper_args__ = {"polymorphic_identity": "division"}
-
+    # Division
     def get_result(self) -> float:
         """
         Divide the first number by all subsequent numbers sequentially.

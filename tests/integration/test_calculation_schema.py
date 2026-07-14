@@ -339,3 +339,15 @@ def test_schema_with_mixed_int_and_float():
     }
     calc = CalculationBase(**data)
     assert len(calc.inputs) == 4
+
+# Line 146
+# Valid
+def test_calculation_validator_valid():
+    calc = CalculationBase(type=CalculationType.ADDITION, inputs=[1, 2])
+    assert calc.inputs == [1, 2]
+
+# Division by zero
+def test_calculation_validator_division_zero():
+    with pytest.raises(ValueError, match="Cannot divide by zero"):
+        CalculationBase(type=CalculationType.DIVISION, inputs=[10, 0])
+
