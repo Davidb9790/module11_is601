@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     from environment variables or a .env file. This follows the Twelve-Factor App
     methodology for configuration management.
     """
-    DATABASE_URL: str = "postgresql://postgres:postgres@postgres:5432/calculator_db"
+    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/fastapi_db"
     
     class Config:
         env_file = ".env"

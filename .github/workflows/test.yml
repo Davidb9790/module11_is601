@@ -13,7 +13,7 @@ jobs:
         env:
           POSTGRES_USER: user
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: myappdb
+          POSTGRES_DB: fastapi_db
         ports:
           - 5432:5432
         options: >-
@@ -43,10 +43,11 @@ jobs:
           playwright install
       - name: Run tests
         run: |
-          source venv/bin/activate
-          pytest tests/unit/ --cov=src --junitxml=test-results/junit.xml
-          pytest tests/integration/
-          pytest tests/e2e/
+            source venv/bin/activate
+            export DATABASE_URL=postgresql://user:password@postgres:5432/fastapi_db
+            pytest tests/unit/ --cov=src --junitxml=test-results/junit.xml
+            pytest tests/integration/
+            pytest tests/e2e/
   security:
     needs: test
     runs-on: ubuntu-latest
